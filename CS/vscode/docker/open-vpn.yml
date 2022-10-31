@@ -1,0 +1,43 @@
+version: "3"
+name: "JmcSmartFleet"
+services:
+  vpn:
+    container_name: vpn
+    image: dperson/openvpn-client:latest
+    cap_add:
+      - net_admin
+    environment:
+      TZ: 'EST5EDT'
+      DNS: '114.114.114.114'
+    read_only: true
+    tmpfs:
+      - /run
+      - /tmp
+    restart: unless-stopped
+    security_opt:
+      - label:disable
+    stdin_open: true
+    tty: true
+    volumes:
+      - /dev/net:/dev/net:z
+      - ~/Documents/PRO/vscode/config/openVPN:/vpn # You'll need to provide this
+    # security_opt:
+    #   - label:disable
+    networks:
+      - default
+    entrypoint: ["/sbin/tini", "--", "/usr/bin/openvpn.sh", "-d"]
+  
+
+  JmcSmartFleet:
+    image: python:3.7
+    container_name: Dev-JmcSmartFleet
+    depends_on:
+      - vpn
+    environment:
+      TZ: 'EST5EDT'
+    network_mode: "service:vpn"
+    restart: unless-stopped
+    command: /bin/sh -c "while sleep 1000; do :; done"  
+
+networks:
+  default:
