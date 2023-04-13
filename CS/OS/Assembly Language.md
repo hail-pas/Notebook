@@ -134,7 +134,17 @@ cr3   # 页表索引，指向页目录表
 cr4
 ```
 
+# 内存分段
 
+## .bss
+> Block Started by Symbol 段是用于存放未初始化全局变量或静态变量的一段内存空间; 这个段中的变量在程序开始执行前会被自动初始化为0或Null
+
+
+## .data
+> 用于存放已初始化全局变量或静态变量的一段内存空间; 程序开始执行前就已经被初始化了
+
+## .text
+> 用于存放程序指令的一段内存空间; 程序开始执行时被载入到指令寄存器中，然后被CPU逐条解释执行
 
 # 指令
 
@@ -145,6 +155,34 @@ cr4
 # l 四字节
 # q 八字节
 ```
+## 数据保存
+```assembly
+	; define byte/word/doubleword/quadword
+	; db bytes
+	; dw word = 2 bytes
+	; dd double word = 4 bytes
+	; dq quad word = 8 bytes
+var:  db    0x55                ; just the byte 0x55
+      db    0x55,0x56,0x57      ; three bytes in succession
+      db    'a',0x55            ; character constants are OK
+      db    'hello',13,10,'$'   ; so are string constants
+      dw    0x1234              ; 0x34 0x12
+      dw    'a'                 ; 0x61 0x00 (it's just a number)
+      dw    'ab'                ; 0x61 0x62 (character constant)
+      dw    'abc'               ; 0x61 0x62 0x63 0x00 (string)
+      dd    0x12345678          ; 0x78 0x56 0x34 0x12
+      dd    1.234567e20         ; floating-point constant
+      dq    0x123456789abcdef0  ; eight byte constant
+      dq    1.234567e20         ; double-precision float
+      dt    1.234567e20         ; extended-precision float
+
+; 声明变量 不初始化 reserve byte/word/quadword
+buffer:         resb    64              ; reserve 64 bytes
+wordvar:        resw    1               ; reserve a word
+realarray:      resq    10              ; array of ten reals
+PI				equ		3.1415926		; PI = 3.1415926
+```
+
 
 ## 数据传送
 
@@ -227,11 +265,11 @@ IN al, 0x64 # 读端口
 OUT  # 写端口
 ```
 
-# 跳转和函数
+## 跳转和函数
 
 > 冒号结尾的标识符，不能以数字开头；可以在 .data 和 .text 段定义标签
 
-## 跳转
+### 跳转
 
 ```assembly
 # 无条件跳转 goto
@@ -245,7 +283,7 @@ loop_begin: movq $0x112358, %rax
 						je	loop_begin
 ```
 
-## 函数
+### 函数
 
 ```assembly
 call label # 类似jmp，但还会把当前的rip寄存器push到栈区里
@@ -253,7 +291,7 @@ ret  # 无操作数，默认回到当前栈顶即rsp指向的位置，并弹出�
 # callq和retq 只是强调那个地址是8字节
 ```
 
-### 调用约定(Calling Convention)
+#### 调用约定(Calling Convention)
 
 - 参数传递
 
@@ -281,7 +319,7 @@ retq
 # pushq %rbp -> popq %rbp
 ```
 
-### 函数调用
+#### 函数调用
 
 - 调用本文件的函数
 
@@ -394,6 +432,54 @@ _main:
 _main:
 	# do something
 	retq
+```
+
+# 操作数
+> 三类：Register Operands、Memory Operands、Immediate Operands
+
+TODO
+## Register Operands 整数寄存器/通用寄存器
+> EAX, EBX, ECX, EDX, ESP 等, 常用于执行高效的算术和逻辑操作、存储内存地址、函数参数、临时变量
+> E 表示低32位
+
+
+
+
+## Memory Operands 内存操作数
+
+### 格式
+```assembly
+[ number ] 											  直接寻址  MOV EAX, [0x12345678]
+[ reg ]												  寄存器存储的值作为地址
+[ reg + reg*scale ]      scale is 1, 2, 4, or 8 only  变址索引  MOV EAX, [EBX+ECX*4]
+[ reg + number ]									  基址索引  MOV EAX, [EBX+8]
+[ reg + reg*scale + number ]
+```
+
+## Immediate Operands 立即操作数
+> 直接包含在指令中的值或数据，而不是存储在寄存器或内存位置中的数据
+```assembly
+MOV AX, 5
+ADD BX, 10
+;;;;;;;;;;;;;
+; 十进制：纯数字、0前缀、0d前缀、d后缀
+; 十六进制：0h前缀、h后缀 + 0前缀、0x前缀
+; 八进制：0q前缀、q后缀
+; 二进制：0b前缀、b后缀
+200          ; decimal
+0200         ; still decimal - the leading 0 does not make it octal
+0200d        ; explicitly decimal - d suffix
+0d200        ; also decimal - 0d prefex
+
+0c8h         ; hex - h suffix, but leading 0 is required. 不然像字符串
+0xc8         ; hex - the classic 0x prefix
+0hc8         ; hex - for some reason NASM likes 0h
+
+310q         ; octal - q suffix
+0q310        ; octal - 0q prefix
+
+11001000b    ; binary - b suffix
+0b1100_1000  ; binary - 0b prefix, and by the way, underscores are allowed
 ```
 
 # 中断
