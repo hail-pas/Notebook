@@ -8,11 +8,11 @@
 ; just have to return the value in rax.
 ; -----------------------------------------------------------------------------
 
-        global _maxofthree
+        global maxofthree
 
         section .text
 
-_maxofthree:
+maxofthree:
         mov     rax, rdi        ; rax holds rdi - the first argument
         cmp     rax, rsi        ; rsi - the second argument, compare with the first
         cmovl   rax, rsi      ; compare mov, if less than move

@@ -284,18 +284,32 @@ OUT  # 写端口
 
 ### 跳转
 
+#### 无条件跳转
 ```assembly
-# 无条件跳转 goto
+; goto
 _main:
 loop_begin: movq $0x112358, %rax
-					  jmp loop_begin
-# 条件跳转
-_main:
-loop_begin: movq $0x112358, %rax
-						cmp	$0x114514, %rax
-						je	loop_begin
+            mp loop_begin
 ```
 
+#### 条件跳转 - 控制转移
+> action + flags
+##### action
+- j	conditional jump
+- set conditional set
+- cmov conditional move
+##### flags
+- z sign
+- z zero
+- c carry
+- o overflow
+
+```assembly
+jz	L	;Jump to label if the result of the operation was zero
+cmovno	x, y	;if the last operation did not overflow do x <- y
+setc	x	;x <- 1 if the last operation had a carry, but x <- 0 otherwise ( x
+ must be a byte-size register or memory location)
+```
 ### 函数
 
 ```assembly
