@@ -12,12 +12,36 @@ labelName: .quad 0x123432
 # MacOS编译器：as - "Mac OS X Mach-O GNU-based assemblers"
 ```
 
+# 约定
+- 32bytes shadow space before each call
+```assembly
+; 实际使用
+sub		resp, 28h;
+; 实际申请 40 bytes, 原因在于需要做栈的16位对齐, 而在每次调用时都先保存了 8 bytes 的return caller address
+; 故总的为48bytes, aligned on 16 bytes
+```
+
 ## 种类
 
 - x86汇编语言：这是应用最广泛的汇编语言之一，用于PC和服务器上的基于Intel或AMD处理器的操作系统和应用程序
 - ARM汇编语言：这是应用最广泛的嵌入式处理器架构之一，通常用于移动设备、智能家居、汽车电子等领域
 - MIPS汇编语言：这是另一种流行的嵌入式处理器架构，通常用于路由器、交换机和其他网络设备
 - PowerPC汇编语言：这是IBM的处理器架构所使用的汇编语言，通常用于高性能计算和服务器领域
+
+## 文件系统类型 nasm -fxxx
+### elf64 - linux
+### macho64 - MacOS
+```massembly
+; 1. file  type: macho64; nasm -fmacho64
+; 2. system call numbers different
+; 3. doesn’t allow absolute addressing, unless tweaking
+		default rel
+
+	lea		rdi, [msg]
+; 4. 16-bit stack alignment is enforced
+```
+### windows
+[Overview of x64 ABI conventions](https://learn.microsoft.com/en-us/cpp/build/x64-software-conventions?redirectedfrom=MSDN&view=msvc-170)
 
 ## 编译器
 
@@ -149,6 +173,10 @@ cr4
 # 浮点数寄存器 sd suffix; addsq/cvtsi2sd  intToDouble
 xmm0
 xmm1
+
+movaps
+movdqa
+
 ```
 
 # 内存分段
@@ -222,6 +250,25 @@ SBB  # 带借位减法指令
 INC/DEC
 NEG  # 求补
 CAMP # 比较，隐式减
+
+; 浮点数计算：标量计算、打包计算·
+addpd	; packed two double
+addsd	; one single double
+addps	; packed two single precision double
+addss	; one single precision double
+
+; 正数使用xmm计算： Saturated Arithmetic 饱和运算，限制在一定范围，而不是溢出
+; padd...
+paddb		; 16 bytes
+paddw		; 8字 = 16 bytes
+paddd		; 4 个双字 = 128bytes
+paddq		; 2 个四字 = 128bytes
+paddsb		;
+paddsw		;
+paddusb		;
+paddusw		;
+
+
 ```
 
 ## 逻辑
