@@ -145,6 +145,10 @@ cr1
 cr2
 cr3   # 页表索引，指向页目录表
 cr4
+
+# 浮点数寄存器 sd suffix; addsq/cvtsi2sd  intToDouble
+xmm0
+xmm1
 ```
 
 # 内存分段
