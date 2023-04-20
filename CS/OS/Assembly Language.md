@@ -2,6 +2,7 @@
 
 ```assembly
 label   mnemonic   operands   # comment
+[label:] instruction [operands] [; comment]
 # 标签
 labelName: .quad 0x123432
 # 早期通过缩紧来确定文本是属于 标签、助记符、操作数... 还是注释；现在最好保留
@@ -129,7 +130,7 @@ _main:
 	# 小端：0xcdab3412
 
 # x86-64架构下有16个64位通用寄存器； ARM处理器 r1->r15
-# rax、rbx、rcx、rdx
+# rax、rbx、rcx、rdx		; rax 其中场景: 1. 用于存储函数返回值 2. 用于存储系统调用号 3. 累加器且存结果 mul/div r12 -> rax = rax mul/div r12;余数存在rdx
 # rdi、rsi
 # rbp、rsp
 # eax, ebx, ecx, edx, edi, esi, ebp, esp 指代上述的低32位
@@ -200,8 +201,47 @@ movdqa
 # l 四字节
 # q 八字节
 ```
+
+## 宏macro
+```assembly
+; single-line
+%define macro_name(parameter) value
+example:
+	%define argc rsp + 8
+	%define cliArgv0 rsp + 16
+	mov rax, [argc]
+; multiline
+%macro	macro_name number_of_parameters
+    instruction
+    instruction
+    instruction
+%endmacro
+example:
+	%macro PRINT 1
+		pusha
+		pushf
+		jmp %%astr
+	%%str db %1, 0
+	%%strln equ $-%%str
+	%%astr: _syscall_write %%str, %%strln
+	popf
+	popa
+	%endmacro
+
+	%macro _syscall_write 2
+		mov rax, 1
+			mov rdi, 1
+			mov rsi, %%str
+			mov rdx, %%strln
+			syscall
+	%endmacro
+
+; 宏内部的标签是局部的，不能在宏外部使用，且名称必须以%%开头
+```
+
 ## 数据保存
 ```assembly
+; 初始化的数据
 	; define byte/word/doubleword/quadword
 	; db bytes
 	; dw word = 2 bytes
@@ -221,12 +261,21 @@ var:  db    0x55                ; just the byte 0x55
       dq    1.234567e20         ; double-precision float
       dt    1.234567e20         ; extended-precision float
 
+
+; 未初始化的数据
+var
 ; 声明变量 不初始化 reserve byte/word/quadword
 buffer:         resb    64              ; reserve 64 bytes
 wordvar:        resw    1               ; reserve a word
 realarray:      resq    10              ; array of ten reals
+REST/RESO/RESY/RESZ
+; 常量
 PI				equ		3.1415926		; PI = 3.1415926
+; include external binary file
+    image db 0x00
+    incbin "image.png"
 ```
+
 
 
 ## 数据传送
@@ -246,6 +295,10 @@ PUSHF/POPF  # 标志进/出栈指令
 ADD
 ADC  # 带进位加法指令，dst = src + dst + CF
 SUB
+MUL 		; unsigned multiply
+IMUL		; signed multiply
+DIV 		; unsigned divide
+IDIV		; signed divide
 SBB  # 带借位减法指令
 INC/DEC
 NEG  # 求补
@@ -327,6 +380,19 @@ idt_descr:
 LIDT idt_descr
 IN al, 0x64 # 读端口
 OUT  # 写端口
+```
+
+## 功能性
+```assembly
+cls  : clear direction flag 设置CPU标志寄存器的方向标志DF=0，为1时表示字符串操作从高地址向低地址进行，为0反之
+lodsb	: load string byte 从rsi处取一个字节到AL(low 8 bit of rax),并执行移动rsi到下一个字节
+$ 	 : returns position in memory of string where $ defined
+$$ 	  : returns position in memory of current section start
+REP
+MOVSB	: copy a string of bytes (MOVSW, MOVSD and etc..)
+CMPSB	: byte string comparison
+SCASB	: byte string scanning
+STOSB	:  write byte to string
 ```
 
 ## 跳转和函数
@@ -680,5 +746,25 @@ otool -v -t main
 otool -v -s __DATA __data main
 ```
 
+## 内嵌汇编
 
+```c
+// asm [volatile] ("assembly code" : output operand : input operand : clobbers);
+// __asm__ [volatile] ("assembly code" : output operand : input operand : clobbers);
+// volatile means no optimize,  must be executed exactly as written
+__asm__ volatile (
+		"movq $1, %%rax \n\t"  // $1 表示立即数 即 1
+		"movq $1, %%rdi \n\t"
+		"movq %1, %%rsi \n\t"
+		"movl %2, %%edx \n\t"
+		"syscall"
+		: "=g"(ret)
+		: "g"(str), "g" (len)
+);
+-r  : any register, Kept variable value in general purpose register
+-g  : general, Any register, memory or immediate integer operand is allowed, except for registers that are not general registers.
+-f  : floating, Floating point register
+-m  : memory, A memory operand is allowed, with any kind of address that the machine supports in general.
+
+```
 
