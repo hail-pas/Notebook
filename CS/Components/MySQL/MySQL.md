@@ -186,7 +186,7 @@ explain SQL语句    --返回type
 	- index_merge    --索引合并，多个单独索引; 索引覆盖（select 索引， 条件也是索引）
 	- REF    --使用索引查找
 	- EQ_REF   --通过unique索引连接表来查找  select tb2.nid,tb1.name from tb2 left join tb1 on tb2.nid = tb1.nid
-	- const  --制在索引表中查找一次，制扫描一次   select nid from tb1 where nid = 2
+	- const  --只在索引表中查找一次，只扫描一次   select nid from tb1 where nid = 2
 	- system    --const的特列，  select * from (select nid from tb1 where nid = 1) as A
 ```
 #### 不走索引的情况
@@ -203,7 +203,7 @@ explain SQL语句    --返回type
 -- 数据类型不一致
 	如果列是字符串类型，传入条件是必须用引号引起来，不然...
 	select * from tb1 where name = 999;
--- !=    --但是只有主键才会走
+-- !=    目前发现会优化成范围查找，但是范围查找不走索引
 	select * from tb1 where name != 'alex'
 	特别的：如果是主键，则还是会走索引
 			select * from tb1 where nid != 123
