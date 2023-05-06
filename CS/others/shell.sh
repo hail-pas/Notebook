@@ -1,0 +1,8 @@
+# ssh 隧道端口转发    本地地址端口:远程地址端口
+ssh -L 0.0.0.0:8000:127.0.0.1:8000 root@10.211.55.3
+
+# 查看ssh隧道
+lsof -i -n | grep ssh
+
+# http server
+python3 -m http.server 8000 --bind 127.0.0.1
