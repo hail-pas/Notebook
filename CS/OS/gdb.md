@@ -24,3 +24,11 @@ p /x $register      # 打印寄存器的十六进制值
 p a@n               # 打印数组的前n个元素、缺省则打印全部
 x /x [address]         # 以指定格式显示内存中的内容
 ```
+
+### strace
+> strace - trace system calls and signals
+
+```shell
+strace -f gcc hello.c &> strace.log
+
+```
