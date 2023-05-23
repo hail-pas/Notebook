@@ -47,15 +47,3 @@ x/10x $cs * 16 + $rip  # 显示保护模式下当前执行代码额后10行机�
 strace -f gcc hello.c &> strace.log
 
 ```
-
-
-## make
-```shell
-make -nBf Makefile    # 执行 Makefile 中的命令，但不执行命令 make -nB
-
-make -nB \
-  | grep -ve '^\(\#\|echo\|mkdir\|make\)' \
-  | sed "s#$AM_HOME#\$AM_HOME#g" \
-  | sed "s#$PWD#.#g" \
-  | vim -     # 处理执行命令的可读性
-```
