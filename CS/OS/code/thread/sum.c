@@ -13,7 +13,7 @@ void Tsum() {
   for (int i = 0; i < N; i++) {
     // sum++; // MULTI THREAD SHARE MEMORY PROBLEM
     // asm volatile ( // 依然会有问题，多处理器执行
-    //     "incq %0"
+    //     "incq %0
     //     : "+m"(sum)
     // );
     // asm volatile ( // lock incq 没问题
@@ -23,7 +23,8 @@ void Tsum() {
     int rc = pthread_mutex_lock(&lock);
     assert(rc == 0);
     sum += 1;
-    pthread_mutex_unlock(&lock);
+    rc = pthread_mutex_unlock(&lock);
+    assert(rc == 0);
   }
 }
 
