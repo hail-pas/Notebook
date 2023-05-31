@@ -8,6 +8,14 @@
 long sum = 0;
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
+void atomic_inc(long *ptr) {
+  asm volatile(
+    "lock incq %0"  // Atomic + memory fence
+    : "+m"(*ptr)
+    :
+    : "memory"
+  );
+}
 
 void Tsum() {
   for (int i = 0; i < N; i++) {
@@ -17,7 +25,7 @@ void Tsum() {
     //     : "+m"(sum)
     // );
     // asm volatile ( // lock incq 没问题
-    //     "lock incq %0"
+    //     "lock incq %0"       // bus control
     //     : "+m"(sum)
     // );
     int rc = pthread_mutex_lock(&lock);
