@@ -15,3 +15,5 @@ store-load: store-load.c
 
 clean:
 	rm -f a.out
+sum-mutex: sum-mutex.c
+	gcc -O2 $(CFLAGS) -o sum-mutex $<
