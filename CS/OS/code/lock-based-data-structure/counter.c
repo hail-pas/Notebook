@@ -78,7 +78,7 @@ void init(counter_t *c, int threshold){
 }
 
 void update(counter_t *c, int thread_id, int value){
-    pthread_mutex_lock(&c->llock[thread_id]);
+    // pthread_mutex_lock(&c->llock[thread_id]);
     c->local[thread_id] += value;
     if (c->local[thread_id] > c->threshold) {
         pthread_mutex_lock(&c->glock);
@@ -86,7 +86,7 @@ void update(counter_t *c, int thread_id, int value){
         pthread_mutex_unlock(&c->glock);
         c->local[thread_id] = 0;
     }
-    pthread_mutex_unlock(&c->llock[thread_id]);
+    // pthread_mutex_unlock(&c->llock[thread_id]);
 }
 
 void* add(void *thread_id_ptr){
