@@ -30,6 +30,7 @@ void Tconsume() {
   while (1) {
     P(&fill);
     printf(")");
+    // 如果這裏也是critical section,  則需要鎖保護不被中斷執行。
     V(&empty);
   }
 }
