@@ -23,6 +23,8 @@ rsi [COUNT]         # 回退count步
 
 step                # 步进执行，会进入函数调用、系统调用
 continue            # 继续执行，直到遇到断点或程序结束
+
+!command            # 执行shell命令, !cat
 ```
 
 
@@ -35,6 +37,9 @@ info registers      # 查看所有寄存器的值
 info register [reg] # 查看某个寄存器的值
 info threads        # 查看綫程
 thread [num]        # 切換到綫程num
+info inferiors      # 查看进程
+!pmap  processid    # 查看指定进程ID的map
+info proc mappings  # 查看进程maps，等价于上面的两句指令
 
 display [address]   # 实时显示某个地址变量的值
 print [address]     # 打印某个地址变量的值
@@ -55,3 +60,6 @@ x/10x $cs * 16 + $rip       # 显示保护模式下当前执行代码额后10行
 strace -f gcc hello.c &> strace.log
 
 ```
+
+### external tools
+- [gdbgui](https://github.com/cs01/gdbgui)
