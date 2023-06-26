@@ -1,4 +1,5 @@
 #include<stdio.h>
+#include<math.h>
 
 double func(int i){
     volatile double d[1] = {3.14};
@@ -10,14 +11,10 @@ double func(int i){
 int main(int argc, char const *argv[])
 {
     /* code */
-    int a = 0x80000000;
-    int b = a/ -1;
-    printf("%d\n", a);
-    printf("%d\n", b);
-    printf("%f\n", func(0));
-    printf("%f\n", func(1));
-    printf("%f\n", func(2));
-    printf("%f\n", func(3));
-    printf("%f\n", func(4));
+    int x = 1;
+    unsigned u = (unsigned)pow(2, 63);
+
+    printf("x = %u = %d\n", x, x);
+    printf("u = %u = %d\n", u, u);
     return 0;
 }
