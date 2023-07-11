@@ -9,6 +9,12 @@
 -fsanitize=thread             # 綫程 data race
 -fsanitize=memory             # memory
 -fsanitize=ub                 # undefined
--O2                           # 優化
+-O1                           # 优化 1级， O2 二级优化
 
+```
+
+## 其他命令
+```sh
+# 反汇编
+objdump -d xxx
 ```
