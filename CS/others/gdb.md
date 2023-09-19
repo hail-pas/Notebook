@@ -54,6 +54,7 @@ info inferiors      # 查看进程
 !pmap  processid    # 查看指定进程ID的map
 info proc mappings  # 查看进程maps，等价于上面的两句指令
 info breakpoints    # info b
+backtrace           # 调用栈
 
 display [address]   # 实时显示某个地址变量的值
 print [address]     # 打印某个地址变量的值
