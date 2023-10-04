@@ -65,6 +65,7 @@ print [address]     # 打印某个地址变量的值
 p a@n               # 打印数组的前n个元素、缺省则打印全部， p *argv@argc
 
 x /x [address]      # 以指定格式显示内存中的内容
+x/ni [addr]         # 输出addr 所在n行 asm
 p /c $register      # 打印寄存器的字符值 char
 p /x $register      # 打印寄存器的十六进制值 hex
 
