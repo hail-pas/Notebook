@@ -137,4 +137,8 @@ strace -f gcc hello.c &> strace.log
 10. Codesign gdb using your certificate:
     codesign -fs gdbc /usr/local/bin/gdb
 
+11. add to ~/.gdbinit
+    set startup-with-shell enable
+12. terminal enbale debug mode
+    sudo DevToolsSecurity -enable
 ```
