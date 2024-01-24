@@ -93,8 +93,9 @@ strace -f gcc hello.c &> strace.log
 
 
 ### problem
+
+1.MacOS code sign
 ```
-MacOS code sign
 1. Open Keychain Access.app
 2. In menu, open Keychain Access > Certificate Assistant > Create a certificate
 3. Give it a name (e.g. gdbc)
