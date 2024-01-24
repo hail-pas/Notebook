@@ -90,3 +90,50 @@ strace -f gcc hello.c &> strace.log
 ### external tools
 
 - [gdbgui](https://github.com/cs01/gdbgui)
+
+
+### problem
+```
+MacOS code sign
+1. Open Keychain Access.app
+2. In menu, open Keychain Access > Certificate Assistant > Create a certificate
+3. Give it a name (e.g. gdbc)
+    Identity type: Self Signed Root
+    Certificate type: Code Signing
+    Check: let me override defaults
+4. Continue until "specify a location for..."
+    Set Keychain location to System
+    Create certificate and close Certificate Assistant.
+5. Find certificate in System keychain.
+6. Double click certificate
+7. Expand Trust, set Code signing to always trust
+8. Restart taskgated in terminal:
+    killall taskgated
+9. Create: gdb-entitlement.xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+"http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>com.apple.security.cs.allow-jit</key>
+    <true/>
+    <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+    <true/>
+    <key>com.apple.security.cs.allow-dyld-environment-variables</key>
+    <true/>
+    <key>com.apple.security.cs.disable-library-validation</key>
+    <true/>
+    <key>com.apple.security.cs.disable-executable-page-protection</key>
+    <true/>
+    <key>com.apple.security.cs.debugger</key>
+    <true/>
+    <key>com.apple.security.get-task-allow</key>
+    <true/>
+</dict>
+</plist>
+
+10. Codesign gdb using your certificate:
+    codesign -fs gdbc /usr/local/bin/gdb
+
+```
