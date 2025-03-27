@@ -4,7 +4,7 @@
 ## Steps
 
 ```shell
-poetry new burnish-sdk-py
+poetry new xxxx-sdk-py
 
 poetry build
 
